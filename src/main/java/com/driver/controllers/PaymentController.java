@@ -18,6 +18,22 @@ public class PaymentController {
         //If the amountSent is less than bill, throw "Insufficient Amount" exception, otherwise update payment attributes
         //If the mode contains a string other than "cash", "card", or "upi" (any character in uppercase or lowercase), throw "Payment mode not detected" exception.
         //Note that the reservationId always exists
-        return null
+        // get the bill amount for the reservation
+        int billAmount = paymentService.getReservationBill(reservationId);
+
+        // check if the amountSent is sufficient for the bill
+        if (amountSent < billAmount) {
+            throw new Exception("Insufficient Amount");
+        }
+
+        // validate the payment mode
+        if (!mode.equalsIgnoreCase("cash") && !mode.equalsIgnoreCase("card") && !mode.equalsIgnoreCase("upi")) {
+            throw new Exception("Payment mode not detected");
+        }
+
+        // process the payment using the PaymentServiceImpl
+        Payment payment = paymentService.processPayment(reservationId, amountSent, mode);
+
+        return payment;
     }
 }
